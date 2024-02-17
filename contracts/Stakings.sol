@@ -4,6 +4,8 @@ pragma solidity ^0.8.9;
  import "./IERC20.sol";
 
   error NO_ENOUGH_FUNDS();
+  error NO_ADDRESS_0_ALLOWED();
+  error TIME_CONFLICT_ERROR();
 
 contract Stakings {
    
@@ -24,6 +26,10 @@ contract Stakings {
 
     function stake(uint256 amount) external {
         // require(amount>0, "No enough funds");
+        if (msg.sender==address(0)) {
+            revert NO_ADDRESS_0_ALLOWED();
+            
+        }
 
         if (amount<= 0) {
             revert NO_ENOUGH_FUNDS();
@@ -38,9 +44,21 @@ contract Stakings {
     }
 
     function unstake(uint256 amount)external  {
-        require(msg.sender != address(0),"you can't withdraw");
-        require(amount>0, "No enough funds");
-        require(block.timestamp >= lastStakedTime[msg.sender]);
+        // require(msg.sender != address(0),"you can't withdraw");
+          if (msg.sender==address(0)) {
+            revert NO_ADDRESS_0_ALLOWED();
+            
+        }
+        // require(amount>0, "No enough funds");
+        if (amount<= 0) {
+            revert NO_ENOUGH_FUNDS();
+            
+        }
+        // require(block.timestamp >= lastStakedTime[msg.sender]);
+        if ((lastStakedTime[msg.sender])>block.timestamp){
+            
+            revert TIME_CONFLICT_ERROR();
+        }
           
         onlyOwner();
         
@@ -67,10 +85,12 @@ contract Stakings {
 
     function CalculateReward(address user) internal  view returns (uint256) {
         uint256 timeElapsed=  block.timestamp - lastStakedTime[msg.sender];
-        uint256 myReward= stakedBalance[user];
-        uint256 percentStake=  myReward * 10/ 100 
+        // uint256 myReward= stakedBalance[user];
+
+        uint256 percentStake=  stakedBalance[user] * 10/ 100 
         
         *(timeElapsed/60);
+
         return percentStake;
         
     }
