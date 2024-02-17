@@ -37,7 +37,7 @@ contract Stakings {
         }
 
         require(token.balanceOf(msg.sender) >=  amount,"no enough token");
-        
+
         require(token.transferFrom(msg.sender, address(this), amount),"failed to transfer");
 
         stakedBalance[msg.sender]= stakedBalance[msg.sender] + amount;
@@ -55,11 +55,6 @@ contract Stakings {
         if (amount<= 0) {
             revert NO_ENOUGH_FUNDS();
             
-        }
-        // require(block.timestamp >= lastStakedTime[msg.sender]);
-        if ((lastStakedTime[msg.sender])>block.timestamp){
-
-            revert TIME_CONFLICT_ERROR();
         }
           
         onlyOwner();
@@ -86,6 +81,7 @@ contract Stakings {
     }
 
     function CalculateReward(address user) internal  view returns (uint256) {
+
         uint256 timeElapsed=  block.timestamp - lastStakedTime[msg.sender];
         // uint256 myReward= stakedBalance[user];
 
