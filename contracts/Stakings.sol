@@ -37,9 +37,11 @@ contract Stakings {
         }
 
         require(token.balanceOf(msg.sender) >=  amount,"no enough token");
+        
         require(token.transferFrom(msg.sender, address(this), amount),"failed to transfer");
 
         stakedBalance[msg.sender]= stakedBalance[msg.sender] + amount;
+
         lastStakedTime[msg.sender]= block.timestamp;
     }
 
@@ -56,7 +58,7 @@ contract Stakings {
         }
         // require(block.timestamp >= lastStakedTime[msg.sender]);
         if ((lastStakedTime[msg.sender])>block.timestamp){
-            
+
             revert TIME_CONFLICT_ERROR();
         }
           
